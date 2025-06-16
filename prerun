@@ -1,0 +1,807 @@
+import React, { useState, useEffect } from 'react';
+import { User, MessageCircle, Briefcase, TrendingUp, Plus, Heart, Share2, Calendar, DollarSign, Users, Bell, Home, Search, Menu } from 'lucide-react';
+
+const SocialBusinessApp = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [posts, setPosts] = useState([
+    {
+      id: 1,
+      user: 'Sarah Chen',
+      avatar: '👩‍💼',
+      time: '2h ago',
+      content: 'Just closed a major deal with a client I met through this platform! Networking really works. 🎉',
+      likes: 24,
+      comments: 8,
+      type: 'achievement',
+      emojiReplies: ['🎉', '👏', '🔥', '💪', '🚀']
+    },
+    {
+      id: 2,
+      user: 'Mike Rodriguez',
+      avatar: '👨‍💻',
+      time: '4h ago',
+      content: 'Looking for a reliable web developer for a startup project. Budget: $5k-10k. DM if interested!',
+      likes: 12,
+      comments: 15,
+      type: 'opportunity',
+      emojiReplies: ['👀', '💻', '🤝', '💡']
+    },
+    {
+      id: 3,
+      user: 'Emily Watson',
+      avatar: '👩‍🎨',
+      time: '6h ago',
+      content: 'Sharing my latest design work. Always open to feedback and collaboration opportunities.',
+      likes: 45,
+      comments: 12,
+      type: 'showcase',
+      emojiReplies: ['🎨', '😍', '👌', '🔥', '💯', '✨']
+    }
+  ]);
+
+  const [businessMetrics] = useState({
+    revenue: '$12,450',
+    leads: 23,
+    connections: 156,
+    opportunities: 8
+  });
+
+  const [greetings] = useState([
+    "Selamat Morning! ☀️",
+    "Hot hot lunch time! 🌶️",
+    "Faster think where to happy hour later! 🍻",
+    "What time start? ⏰",
+    "Marbuk liau boh? 🏃‍♂️",
+    "Siau liau got mata! 👮‍♂️",
+    "Siam arh, got talapek! 🚔",
+    "Heng arh reached home! 🏠",
+    "Wifie sleep d! 😴",
+    "Leng chai marbuk liau! 💪",
+    "Siau arh, sleep lah! 😱",
+    "Kun liau! 😴",
+    "Baby want nen nen wei! 🍼",
+    "No lah, is lau kong's friend! 👴"
+  ]);
+
+  const [currentGreeting, setCurrentGreeting] = useState(greetings[0]);
+
+  const [compounds] = useState([
+    // Money compounds (donations/payments) - max RM200
+    { type: 'money', amount: 'RM18', target: 'local orphanage', points: 180, category: 'donation' },
+    { type: 'money', amount: 'RM50', target: 'animal shelter', points: 250, category: 'donation' },
+    { type: 'money', amount: 'RM88', target: 'old folks home', points: 350, category: 'donation' },
+    { type: 'money', amount: 'RM25', target: 'roadside food vendor', points: 150, category: 'support' },
+    { type: 'money', amount: 'RM15', target: 'aunty selling air kelapa', points: 120, category: 'support' },
+    { type: 'money', amount: 'RM30', target: 'cleaning uncle', points: 180, category: 'support' },
+    { type: 'money', amount: 'RM100', target: 'local mosque/temple donation', points: 500, category: 'donation' },
+    { type: 'money', amount: 'RM75', target: 'community library', points: 400, category: 'donation' },
+    { type: 'money', amount: 'RM200', target: 'flood relief fund', points: 800, category: 'donation' },
+    { type: 'money', amount: 'RM35', target: 'street musician', points: 200, category: 'support' },
+    { type: 'money', amount: 'RM60', target: 'pest control service', points: 300, category: 'service' },
+    { type: 'money', amount: 'RM45', target: 'local NGO', points: 250, category: 'donation' },
+    
+    // System upgrade payments (10-99 cents)
+    { type: 'system', amount: '10¢', target: 'unlock emoji pack', points: 10, category: 'upgrade' },
+    { type: 'system', amount: '25¢', target: 'premium profile theme', points: 25, category: 'upgrade' },
+    { type: 'system', amount: '50¢', target: 'compound immunity (1 day)', points: 50, category: 'upgrade' },
+    { type: 'system', amount: '75¢', target: 'custom greeting message', points: 75, category: 'upgrade' },
+    { type: 'system', amount: '99¢', target: 'VIP status (1 week)', points: 99, category: 'upgrade' },
+    { type: 'system', amount: '30¢', target: 'extra post reactions', points: 30, category: 'upgrade' },
+    { type: 'system', amount: '60¢', target: 'priority support', points: 60, category: 'upgrade' },
+    
+    // User-to-user payments (5 cents to RM3.80)
+    { type: 'user', amount: '5¢', target: 'random JoinBro user', points: 15, category: 'social' },
+    { type: 'user', amount: '10¢', target: 'user who helped you', points: 20, category: 'social' },
+    { type: 'user', amount: '25¢', target: 'most active user today', points: 35, category: 'social' },
+    { type: 'user', amount: '50¢', target: 'new member welcome gift', points: 60, category: 'social' },
+    { type: 'user', amount: '88¢', target: 'lucky user (huat ah!)', points: 100, category: 'social' },
+    { type: 'user', amount: 'RM1.20', target: 'user with best post today', points: 140, category: 'social' },
+    { type: 'user', amount: 'RM1.68', target: 'user who made you laugh', points: 180, category: 'social' },
+    { type: 'user', amount: 'RM2.50', target: 'user celebrating birthday', points: 280, category: 'social' },
+    { type: 'user', amount: 'RM3.30', target: 'user having tough time', points: 350, category: 'social' },
+    { type: 'user', amount: 'RM3.80', target: 'user with amazing business idea', points: 400, category: 'social' },
+    
+    // Object compounds (unchanged)
+    { type: 'object', amount: '3', item: 'contacts from strangers', target: 'random people', points: 160, category: 'social' },
+    { type: 'object', amount: '1', item: 'JoinBro member recruitment', target: 'anyone', points: 500, category: 'growth' },
+    { type: 'object', amount: '1', item: 'water', target: 'your staff/reception', points: 50, category: 'kindness' },
+    { type: 'object', amount: '2 pcs', item: 'kuih', target: 'security guard', points: 70, category: 'kindness' },
+    { type: 'object', amount: '1', item: 'coca cola', target: 'next table customer', points: 80, category: 'kindness' },
+    
+    // Action compounds (unchanged)
+    { type: 'action', duration: '30sec', action: 'dance in-front', target: 'random person', points: 200, category: 'dare' },
+    { type: 'action', duration: '60sec', action: 'dance in-front', target: 'random person', points: 300, category: 'dare' },
+    { type: 'action', action: 'show muscle', target: 'public', points: 120, category: 'dare' },
+    { type: 'action', action: 'show 6 pack', target: 'public', points: 200, category: 'dare' },
+    { type: 'action', action: 'hang board asking for discount', target: 'restaurant', points: 250, category: 'dare' },
+  ]);
+
+  const [userActivity, setUserActivity] = useState({
+    likesGiven: 8,      // User's interaction activity
+    commentsGiven: 3,
+    reactionsGiven: 12,
+    postsShared: 2,
+    lastActive: new Date(),
+    dailyTarget: 10,    // Minimum daily interactions expected
+    activityStreak: 5   // Days of good activity
+  });
+
+  const [userWallet, setUserWallet] = useState({ balance: 5.50, points: 1250 }); // Sample wallet
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+
+  // Calculate user's activity level
+  const getActivityLevel = () => {
+    const totalInteractions = userActivity.likesGiven + userActivity.commentsGiven + userActivity.reactionsGiven;
+    if (totalInteractions >= userActivity.dailyTarget) return 'active';
+    if (totalInteractions >= userActivity.dailyTarget * 0.5) return 'moderate';
+    return 'inactive';
+  };
+
+  const getCompoundMultiplier = () => {
+    const activityLevel = getActivityLevel();
+    if (activityLevel === 'inactive') return 3;      // 3x more compounds
+    if (activityLevel === 'moderate') return 1.5;    // 1.5x more compounds  
+    return 1;                                        // Normal rate
+  };
+
+  const getPointsPenalty = () => {
+    const activityLevel = getActivityLevel();
+    if (activityLevel === 'inactive') return 0.5;    // 50% points penalty
+    if (activityLevel === 'moderate') return 0.8;    // 20% points penalty
+    return 1;                                        // Full points
+  };
+
+  const [userCompounds, setUserCompounds] = useState([]);
+  const [showCompoundModal, setShowCompoundModal] = useState(false);
+
+  const handlePayment = (compound) => {
+    setSelectedPayment(compound);
+    setShowPaymentModal(true);
+  };
+
+  const processPayment = () => {
+    if (selectedPayment) {
+      const amount = parseFloat(selectedPayment.amount.replace(/[^\d.]/g, ''));
+      if (userWallet.balance >= amount) {
+        setUserWallet(prev => ({
+          balance: prev.balance - amount,
+          points: prev.points + selectedPayment.points
+        }));
+        completeCompound(selectedPayment.id);
+        setShowPaymentModal(false);
+        setSelectedPayment(null);
+      }
+    }
+  };
+
+  const [showEmojiPicker, setShowEmojiPicker] = useState(null);
+  const [quickEmojis] = useState(['👍', '❤️', '😂', '😮', '😢', '😡', '🔥', '💯', '👏', '🚀', '💪', '🎉']);
+    const randomCompound = compounds[Math.floor(Math.random() * compounds.length)];
+    const timeLimit = 72; // hours
+    const newCompound = {
+      id: Date.now(),
+      ...randomCompound,
+      deadline: new Date(Date.now() + timeLimit * 60 * 60 * 1000),
+      status: 'pending',
+      assignedAt: new Date()
+    };
+    setUserCompounds([...userCompounds, newCompound]);
+    setShowCompoundModal(true);
+  };
+
+  const completeCompound = (compoundId) => {
+    setUserCompounds(userCompounds.map(compound => 
+      compound.id === compoundId 
+        ? { ...compound, status: 'completed', completedAt: new Date() }
+        : compound
+    ));
+  };
+
+  const [newPost, setNewPost] = useState('');
+  const [showNewPost, setShowNewPost] = useState(false);
+
+  // Random compound assignment (simulate getting compound out of nowhere)
+  const handleEmojiReply = (postId, emoji) => {
+    const interval = setInterval(() => {
+      if (Math.random() < 0.3) { // 30% chance every 30 seconds
+        generateRandomCompound();
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [userCompounds]);
+
+  const renderCompound = (compound) => {
+    const timeLeft = compound.deadline - new Date();
+    const hoursLeft = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60)));
+    
+    return (
+      <div key={compound.id} className={`p-4 rounded-xl border-2 mb-3 ${
+        compound.status === 'completed' ? 'bg-green-50 border-green-200' : 
+        hoursLeft < 24 ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'
+      }`}>
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1">
+            <h4 className="font-bold text-sm text-gray-900">
+              🚨 COMPOUND ALERT! 🚨
+            </h4>
+            {compound.type === 'money' && (
+              <div>
+                <p className="text-sm text-gray-700">
+                  {compound.category === 'donation' ? 'Donate' : 'Pay'} <span className="font-bold text-red-600">{compound.amount}</span> to {compound.target}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">💝 {compound.category}</p>
+              </div>
+            )}
+            {compound.type === 'system' && (
+              <div>
+                <p className="text-sm text-gray-700">
+                  Pay <span className="font-bold text-blue-600">{compound.amount}</span> to {compound.target}
+                </p>
+                <p className="text-xs text-blue-500 mt-1">🔧 System upgrade</p>
+              </div>
+            )}
+            {compound.type === 'user' && (
+              <div>
+                <p className="text-sm text-gray-700">
+                  Send <span className="font-bold text-green-600">{compound.amount}</span> to {compound.target}
+                </p>
+                <p className="text-xs text-green-500 mt-1">👥 Social payment</p>
+              </div>
+            )}
+            {compound.type === 'object' && (
+              <p className="text-sm text-gray-700">
+                Give <span className="font-bold text-blue-600">{compound.amount} {compound.item}</span> to {compound.target}
+              </p>
+            )}
+            {compound.type === 'action' && (
+              <p className="text-sm text-gray-700">
+                <span className="font-bold text-purple-600">{compound.action}</span> 
+                {compound.duration && ` for ${compound.duration}`} {compound.target}
+              </p>
+            )}
+          </div>
+            <div className="text-right text-xs">
+              <div className="font-bold text-yellow-600">
+                +{compound.points} pts
+                {compound.isPenalty && (
+                  <span className="text-red-500 ml-1">({getPointsPenalty() < 1 ? 'REDUCED' : ''})</span>
+                )}
+              </div>
+              <div className={`${hoursLeft < 24 ? 'text-red-600' : 'text-gray-600'}`}>
+                {hoursLeft}h left
+              </div>
+              {compound.isPenalty && (
+                <div className="text-red-500 text-xs mt-1">⚠️ PENALTY</div>
+              )}
+            </div>
+        </div>
+        
+        {compound.status === 'pending' && (
+          <div className="flex space-x-2">
+            {(compound.type === 'money' || compound.type === 'system' || compound.type === 'user') ? (
+              <button 
+                onClick={() => handlePayment(compound)}
+                className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg text-xs font-medium hover:bg-green-600 transition-colors touch-manipulation"
+              >
+                💳 Pay Now
+              </button>
+            ) : (
+              <button 
+                onClick={() => completeCompound(compound.id)}
+                className="flex-1 bg-green-500 text-white py-2 px-3 rounded-lg text-xs font-medium hover:bg-green-600 transition-colors touch-manipulation"
+              >
+                📹 Post Proof Video
+              </button>
+            )}
+            <button className="bg-gray-500 text-white py-2 px-3 rounded-lg text-xs font-medium hover:bg-gray-600 transition-colors touch-manipulation">
+              ❌ Skip (-pts)
+            </button>
+          </div>
+        )}
+        
+        {compound.status === 'completed' && (
+          <div className="bg-green-100 p-2 rounded-lg">
+            <p className="text-xs text-green-800 font-medium">✅ Completed! +{compound.points} points earned</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { 
+            ...post, 
+            emojiReplies: [...(post.emojiReplies || []), emoji],
+            comments: post.comments + 1
+          }
+        : post
+    ));
+    setShowEmojiPicker(null);
+  };
+    const hour = new Date().getHours();
+    let greetingIndex;
+    
+    if (hour >= 6 && hour < 10) greetingIndex = 0; // Morning
+    else if (hour >= 12 && hour < 14) greetingIndex = 1; // Hot lunch
+    else if (hour >= 17 && hour < 19) greetingIndex = 2; // Happy hour
+    else if (hour >= 9 && hour < 12) greetingIndex = 3; // Work start
+    else if (hour >= 14 && hour < 17) greetingIndex = 4; // Afternoon work
+    else if (hour >= 19 && hour < 21) greetingIndex = Math.random() < 0.5 ? 5 : 6; // Evening
+    else if (hour >= 21 && hour < 23) greetingIndex = 7; // Reached home
+    else if (hour >= 23 && hour < 2) greetingIndex = Math.random() < 0.5 ? 8 : 10; // Late night
+    else if (hour >= 2 && hour < 4) greetingIndex = Math.random() < 0.5 ? 11 : 12; // Midnight
+    else if (hour >= 4 && hour < 6) greetingIndex = 13; // Very late
+    else greetingIndex = 9; // Default
+
+    setCurrentGreeting(greetings[greetingIndex]);
+  }, [greetings]);
+    setPosts(posts.map(post => 
+      post.id === postId 
+        ? { ...post, likes: post.likes + 1 }
+        : post
+    ));
+  };
+
+  useEffect(() => {
+    if (newPost.trim()) {
+      const post = {
+        id: posts.length + 1,
+        user: 'You',
+        avatar: '😊',
+        time: 'now',
+        content: newPost,
+        likes: 0,
+        comments: 0,
+        type: 'update'
+      };
+      setPosts([post, ...posts]);
+      setNewPost('');
+      setShowNewPost(false);
+    }
+  };
+
+  const PostCard = ({ post }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-3 overflow-hidden">
+      <div className="p-4">
+        <div className="flex items-center mb-3">
+          <div className="text-2xl mr-3 flex-shrink-0">{post.avatar}</div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900 truncate">{post.user}</h3>
+            <p className="text-sm text-gray-500">{post.time}</p>
+          </div>
+          <div className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+            post.type === 'achievement' ? 'bg-green-100 text-green-800' :
+            post.type === 'opportunity' ? 'bg-blue-100 text-blue-800' :
+            post.type === 'showcase' ? 'bg-purple-100 text-purple-800' :
+            'bg-gray-100 text-gray-800'
+          }`}>
+            {post.type}
+          </div>
+        </div>
+        <p className="text-gray-800 mb-4 leading-relaxed text-sm">{post.content}</p>
+        
+        {/* Emoji Replies Display */}
+        {post.emojiReplies && post.emojiReplies.length > 0 && (
+          <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+            <div className="flex flex-wrap gap-1">
+              {post.emojiReplies.slice(0, 8).map((emoji, index) => (
+                <span key={index} className="text-lg animate-bounce" style={{animationDelay: `${index * 0.1}s`}}>
+                  {emoji}
+                </span>
+              ))}
+              {post.emojiReplies.length > 8 && (
+                <span className="text-sm text-gray-500 ml-1">+{post.emojiReplies.length - 8} more</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <button 
+            onClick={() => handleLike(post.id)}
+            className="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors p-2 -m-2 touch-manipulation"
+          >
+            <Heart className="w-5 h-5" />
+            <span className="text-sm font-medium">{post.likes}</span>
+          </button>
+          
+          <div className="relative">
+            <button 
+              onClick={() => setShowEmojiPicker(showEmojiPicker === post.id ? null : post.id)}
+              className="flex items-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors p-2 -m-2 touch-manipulation"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span className="text-sm font-medium">{post.comments}</span>
+            </button>
+            
+            {/* Emoji Picker */}
+            {showEmojiPicker === post.id && (
+              <div className="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-10">
+                <div className="grid grid-cols-4 gap-2 w-48">
+                  {quickEmojis.map((emoji, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleEmojiReply(post.id, emoji)}
+                      className="text-2xl p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <button className="flex items-center space-x-2 text-gray-600 hover:text-green-500 transition-colors p-2 -m-2 touch-manipulation">
+            <Share2 className="w-5 h-5" />
+            <span className="text-sm font-medium">Share</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const MetricCard = ({ icon: Icon, label, value, color }) => (
+    <div className="bg-white rounded-xl p-3 shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-gray-600 truncate">{label}</p>
+          <p className="text-lg font-bold text-gray-900 mt-1">{value}</p>
+        </div>
+        <div className={`p-2 rounded-lg flex-shrink-0 ${color}`}>
+          <Icon className="w-4 h-4 text-white" />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl p-4 text-white mb-4">
+              <div className="flex justify-between items-start mb-2">
+                <h2 className="text-xl font-bold">{currentGreeting}</h2>
+                <div className="text-right text-sm">
+                  <div>💰 RM{userWallet.balance.toFixed(2)}</div>
+                  <div>⭐ {userWallet.points} pts</div>
+                </div>
+              </div>
+              <p className="opacity-90 text-sm leading-relaxed">You have 3 new connection requests and 5 business opportunities waiting.</p>
+              
+              {/* Activity Status */}
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <div className="flex items-center space-x-3">
+                  <span>👍 {userActivity.likesGiven}</span>
+                  <span>💬 {userActivity.commentsGiven}</span>
+                  <span>😄 {userActivity.reactionsGiven}</span>
+                </div>
+                <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  getActivityLevel() === 'active' ? 'bg-green-500 bg-opacity-20 text-green-100' :
+                  getActivityLevel() === 'moderate' ? 'bg-yellow-500 bg-opacity-20 text-yellow-100' :
+                  'bg-red-500 bg-opacity-20 text-red-100'
+                }`}>
+                  {getActivityLevel() === 'active' ? '🔥 Active' :
+                   getActivityLevel() === 'moderate' ? '⚠️ Moderate' : '❄️ Inactive'}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <MetricCard 
+                icon={DollarSign} 
+                label="Revenue" 
+                value={businessMetrics.revenue} 
+                color="bg-green-500" 
+              />
+              <MetricCard 
+                icon={Users} 
+                label="Connections" 
+                value={businessMetrics.connections} 
+                color="bg-yellow-500" 
+              />
+              <MetricCard 
+                icon={TrendingUp} 
+                label="Leads" 
+                value={businessMetrics.leads} 
+                color="bg-purple-500" 
+              />
+              <MetricCard 
+                icon={Briefcase} 
+                label="Opportunities" 
+                value={businessMetrics.opportunities} 
+                color="bg-orange-500" 
+              />
+            </div>
+
+            {/* Active Compounds Section */}
+            {userCompounds.filter(c => c.status === 'pending').length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-bold text-gray-900">🚨 Your Compounds!</h3>
+                  {getActivityLevel() === 'inactive' && (
+                    <div className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                      Low activity = More compounds!
+                    </div>
+                  )}
+                </div>
+                {userCompounds.filter(c => c.status === 'pending').map(renderCompound)}
+                
+                {/* Activity Warning */}
+                {getActivityLevel() !== 'active' && (
+                  <div className="bg-orange-50 border border-orange-200 p-3 rounded-lg text-sm">
+                    <p className="text-orange-800 font-medium mb-1">💡 Pro Tip:</p>
+                    <p className="text-orange-700">
+                      More likes, comments & reactions = Fewer compounds + Full points!
+                      <br />Target: {userActivity.dailyTarget} interactions daily
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Network Feed</h3>
+              <div className="flex space-x-2">
+                <button 
+                  onClick={generateRandomCompound}
+                  className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors text-xs"
+                  title="Get Random Compound (Testing)"
+                >
+                  🚨
+                </button>
+                <button 
+                  onClick={() => setShowNewPost(true)}
+                  className="bg-yellow-500 text-white p-3 rounded-full hover:bg-yellow-600 transition-colors shadow-lg touch-manipulation"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {showNewPost && (
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <textarea
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  placeholder="Share an update, opportunity, or achievement..."
+                  className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm"
+                  rows="3"
+                />
+                <div className="flex justify-end space-x-2 mt-3">
+                  <button 
+                    onClick={() => setShowNewPost(false)}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors touch-manipulation"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleNewPost}
+                    className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium touch-manipulation"
+                  >
+                    Post
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div>
+              {posts.map(post => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+
+            {/* Payment Modal */}
+            {showPaymentModal && selectedPayment && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-xl p-6 w-full max-w-sm">
+                  <h3 className="text-lg font-bold mb-4">💳 Confirm Payment</h3>
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">
+                      {selectedPayment.category === 'donation' ? 'Donate' : 'Pay'} to:
+                    </p>
+                    <p className="font-semibold">{selectedPayment.target}</p>
+                    <p className="text-xl font-bold text-green-600 my-2">{selectedPayment.amount}</p>
+                    <p className="text-sm text-gray-500">You'll earn +{selectedPayment.points} points</p>
+                  </div>
+                  
+                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm">Your wallet: RM{userWallet.balance.toFixed(2)}</p>
+                    <p className="text-sm">After payment: RM{(userWallet.balance - parseFloat(selectedPayment.amount.replace(/[^\d.]/g, ''))).toFixed(2)}</p>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <button 
+                      onClick={() => setShowPaymentModal(false)}
+                      className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={processPayment}
+                      className="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-lg font-medium"
+                      disabled={userWallet.balance < parseFloat(selectedPayment.amount.replace(/[^\d.]/g, ''))}
+                    >
+                      Pay Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'business':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Business Dashboard</h2>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-semibold text-gray-900">Monthly Revenue</p>
+                    <p className="text-2xl font-bold text-green-600">{businessMetrics.revenue}</p>
+                  </div>
+                  <TrendingUp className="w-8 h-8 text-green-500" />
+                </div>
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-semibold text-gray-900">Active Leads</p>
+                    <p className="text-2xl font-bold text-blue-600">{businessMetrics.leads}</p>
+                  </div>
+                  <Users className="w-8 h-8 text-blue-500" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Opportunities</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Web Development Project</p>
+                    <p className="text-sm text-gray-600">Budget: $8,000</p>
+                  </div>
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">New</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Marketing Consultation</p>
+                    <p className="text-sm text-gray-600">Budget: $3,500</p>
+                  </div>
+                  <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">In Progress</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">Brand Design Package</p>
+                    <p className="text-sm text-gray-600">Budget: $5,200</p>
+                  </div>
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">Proposal Sent</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'network':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Network</h2>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input 
+                    type="text" 
+                    placeholder="Search connections..."
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                { name: 'Alex Thompson', role: 'Software Engineer', company: 'TechCorp', avatar: '👨‍💻', status: 'online' },
+                { name: 'Maria Garcia', role: 'Marketing Director', company: 'GrowthLab', avatar: '👩‍💼', status: 'offline' },
+                { name: 'David Kim', role: 'Product Designer', company: 'DesignStudio', avatar: '👨‍🎨', status: 'online' },
+                { name: 'Lisa Johnson', role: 'Business Analyst', company: 'DataInsights', avatar: '👩‍💻', status: 'online' }
+              ].map((connection, index) => (
+                <div key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <div className="text-3xl">{connection.avatar}</div>
+                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
+                          connection.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                        }`}></div>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{connection.name}</h3>
+                        <p className="text-sm text-gray-600">{connection.role}</p>
+                        <p className="text-sm text-gray-500">{connection.company}</p>
+                      </div>
+                    </div>
+                    <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium">
+                      Message
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      default:
+        return <div>Select a tab</div>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="px-4 py-3 safe-area-top">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
+                JoinBro
+              </h1>
+              <p className="text-xs text-gray-500 font-medium">Business for Everyone, How About Sis...</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button className="p-2.5 text-gray-600 hover:text-gray-900 transition-colors touch-manipulation">
+                <Bell className="w-5 h-5" />
+              </button>
+              <button className="p-2.5 text-gray-600 hover:text-gray-900 transition-colors touch-manipulation">
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="px-3 py-4 pb-24 safe-area-bottom">
+        {renderContent()}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom max-w-md mx-auto">
+        <div className="flex items-center justify-around px-2 py-2">
+          <button
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center space-y-1 p-3 rounded-xl transition-colors touch-manipulation min-w-0 flex-1 ${
+              activeTab === 'home' ? 'text-yellow-600 bg-yellow-50' : 'text-gray-600'
+            }`}
+          >
+            <Home className="w-6 h-6" />
+            <span className="text-xs font-medium truncate">Home</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('business')}
+            className={`flex flex-col items-center space-y-1 p-3 rounded-xl transition-colors touch-manipulation min-w-0 flex-1 ${
+              activeTab === 'business' ? 'text-yellow-600 bg-yellow-50' : 'text-gray-600'
+            }`}
+          >
+            <Briefcase className="w-6 h-6" />
+            <span className="text-xs font-medium truncate">Business</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('network')}
+            className={`flex flex-col items-center space-y-1 p-3 rounded-xl transition-colors touch-manipulation min-w-0 flex-1 ${
+              activeTab === 'network' ? 'text-yellow-600 bg-yellow-50' : 'text-gray-600'
+            }`}
+          >
+            <Users className="w-6 h-6" />
+            <span className="text-xs font-medium truncate">Network</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SocialBusinessApp;
